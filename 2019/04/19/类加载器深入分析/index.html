@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="hexo,blog,">
+  <meta name="keywords" content="类加载器,">
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="Hexo 是一个基于nodejs 的静态博客网站生成器，作者是来自台湾的 Tommy Chen.主页中有非常详细的介绍，主页中有介绍内容我这里就不赘述了，这里主要说说主页中没有详细说明内容。  hexo 可以理解为是基于node.js制作的一个博客工具，不是我们理解的一个开源的博客系统。其中的差别，有点意思。hexo 正常来说，不需要部署到我们的服务器上，我们的服务器上保存的，其实是基于在hex">
-<meta name="keywords" content="hexo,blog">
+<meta name="description" content="类加载1.在java代码中，类型的加载、连接与初始化都是过程都是在程序运行期间完成的。2.提供了更大的灵活性，增加了更多的可能性。Java虚拟机与程序的生命周期：在以下几种情况下，Java虚拟机将结束生命周期1.执行了System.exit()方法；2.程序正常执行结束；3.程序在执行过程中遇到了异常或错误而异常终止；4.由于操作系统出现错误而导致Java虚拟机进程终止（不可控）；  类的加载、">
+<meta name="keywords" content="类加载器">
 <meta property="og:type" content="article">
-<meta property="og:title" content="个人博客搭建详解">
-<meta property="og:url" content="http://yoursite.com/2019/04/19/first/index.html">
+<meta property="og:title" content="类加载器深入分析">
+<meta property="og:url" content="http://yoursite.com/2019/04/19/类加载器深入分析/index.html">
 <meta property="og:site_name" content="我的笔记">
-<meta property="og:description" content="Hexo 是一个基于nodejs 的静态博客网站生成器，作者是来自台湾的 Tommy Chen.主页中有非常详细的介绍，主页中有介绍内容我这里就不赘述了，这里主要说说主页中没有详细说明内容。  hexo 可以理解为是基于node.js制作的一个博客工具，不是我们理解的一个开源的博客系统。其中的差别，有点意思。hexo 正常来说，不需要部署到我们的服务器上，我们的服务器上保存的，其实是基于在hex">
+<meta property="og:description" content="类加载1.在java代码中，类型的加载、连接与初始化都是过程都是在程序运行期间完成的。2.提供了更大的灵活性，增加了更多的可能性。Java虚拟机与程序的生命周期：在以下几种情况下，Java虚拟机将结束生命周期1.执行了System.exit()方法；2.程序正常执行结束；3.程序在执行过程中遇到了异常或错误而异常终止；4.由于操作系统出现错误而导致Java虚拟机进程终止（不可控）；  类的加载、">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-19T00:52:06.950Z">
+<meta property="og:updated_time" content="2019-04-22T06:16:20.241Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="个人博客搭建详解">
-<meta name="twitter:description" content="Hexo 是一个基于nodejs 的静态博客网站生成器，作者是来自台湾的 Tommy Chen.主页中有非常详细的介绍，主页中有介绍内容我这里就不赘述了，这里主要说说主页中没有详细说明内容。  hexo 可以理解为是基于node.js制作的一个博客工具，不是我们理解的一个开源的博客系统。其中的差别，有点意思。hexo 正常来说，不需要部署到我们的服务器上，我们的服务器上保存的，其实是基于在hex">
+<meta name="twitter:title" content="类加载器深入分析">
+<meta name="twitter:description" content="类加载1.在java代码中，类型的加载、连接与初始化都是过程都是在程序运行期间完成的。2.提供了更大的灵活性，增加了更多的可能性。Java虚拟机与程序的生命周期：在以下几种情况下，Java虚拟机将结束生命周期1.执行了System.exit()方法；2.程序正常执行结束；3.程序在执行过程中遇到了异常或错误而异常终止；4.由于操作系统出现错误而导致Java虚拟机进程终止（不可控）；  类的加载、">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/04/19/first/">
+  <link rel="canonical" href="http://yoursite.com/2019/04/19/类加载器深入分析/">
 
 
 
 
 
-  <title>个人博客搭建详解 | 我的笔记</title>
+  <title>类加载器深入分析 | 我的笔记</title>
   
 
 
@@ -263,7 +263,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/19/first/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/19/类加载器深入分析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="wxmx2008">
@@ -280,7 +280,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">个人博客搭建详解</h1>
+          <h1 class="post-title" itemprop="name headline">类加载器深入分析</h1>
         
 
         <div class="post-meta">
@@ -315,8 +315,19 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Hexo/" itemprop="url" rel="index">
-                    <span itemprop="name">Hexo</span>
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/类加载器/" itemprop="url" rel="index">
+                    <span itemprop="name">类加载器</span>
                   </a>
                 </span>
 
@@ -353,9 +364,12 @@
 
       
         <blockquote>
-<p>Hexo 是一个基于nodejs 的静态博客网站生成器，作者是来自台湾的 Tommy Chen.<br>主页中有非常详细的介绍，主页中有介绍内容我这里就不赘述了，这里主要说说主页中没有详细说明内容。</p>
+<p>类加载<br>1.在java代码中，类型的加载、连接与初始化都是过程都是在程序运行期间完成的。<br>2.提供了更大的灵活性，增加了更多的可能性。<br>Java虚拟机与程序的生命周期：在以下几种情况下，Java虚拟机将结束生命周期<br>1.执行了System.exit()方法；<br>2.程序正常执行结束；<br>3.程序在执行过程中遇到了异常或错误而异常终止；<br>4.由于操作系统出现错误而导致Java虚拟机进程终止（不可控）；</p>
 </blockquote>
-<p>hexo 可以理解为是基于node.js制作的一个博客工具，不是我们理解的一个开源的博客系统。其中的差别，有点意思。<br>hexo 正常来说，不需要部署到我们的服务器上，我们的服务器上保存的，其实是基于在hexo通过markdown编写的文章，然后hexo帮我们生成静态的html页面，然后，将生成的html上传到我们的服务器。简而言之：hexo是个静态页面生成、上传的工具。</p>
+<p>类的加载、连接与初始化<br>加载：查找并加载类的字节码文件的二进制数据<br>连接：<br>   1.验证：确保被加载的类的正确性<br>   2.准备：为类的静态变量分配内存，并将其初始化为默认值（例如：即便在程序中显示地将某个类的int静态变量声明为1，此时准备阶段是被赋值为0）<br>   3.解析：把类中的符号引用转换为直接引用（用指针的方法直接定位到相应的方法或成员变量）；<br>初始化：为类的静态变量赋予正确的初始值以及执行静态代码块；</p>
+<p>类的使用与卸载<br>类加载到内存中后是以一定的数据结构驻留在内存中的，可以将类从内存中卸载</p>
+<p>在类的加载、连接与初始化中：<br>所有Java程序对类的使用方式可分为两种：主动使用，被动使用；<br>所有的Java虚拟机实现必须在每个类或接口被Java程序 “首次主动使用”时才初始化他们；<br>主动使用（七种）：<br>1.创建类的实例；<br>2.访问某个类或接口的静态变量，或者对该静态变量赋值；<br>3.调用类的静态方法；<br>4.反射；<br>5.初始化一个类的子类；<br>6.Java虚拟机启动时被标记为启动类的类（包含main方法的类）；<br>7.JDK1.7开始提供的动态语言支持：<br>除了以上七种情况，其他使用Java类的方法都被看做是对类的被动使用，都不会导致类的初始化；<br>当一个类在初始化时，要求其父类全部都已经初始化完毕了；<br>对于静态非final字段来说，只有直接定义了该字段的类才会被初始化；<br>类的加载：<br>类的加载指的是：将类的 .class文件中的二进制数据读入到内存中，将其放在运行时数据区的方<br>法区内，然后在内存中创建一个 java.lang.Class对象（JVM规范并未说明Class对象位于哪里，<br>HotSpot虚拟机将其放在了方法区内）用来封装类在方法区内的数据结构；<br>使用VM参数：（-XX:+TraceClassLoading）可以查看虚拟机加载整个程序的class文件信息；<br>VM参数的三种含义：</p>
+<h1 id="XX-表示开启option选项"><a href="#XX-表示开启option选项" class="headerlink" title="-XX:+, 表示开启option选项"></a>-XX:+<option>, 表示开启option选项</option></h1><h1 id="XX-表示关闭option选项"><a href="#XX-表示关闭option选项" class="headerlink" title="-XX:-,表示关闭option选项"></a>-XX:-<option>,表示关闭option选项</option></h1><h1 id="XX"><a href="#XX" class="headerlink" title="-XX:="></a>-XX:<option>=<value></value></option></h1><p>加载 .class文件的方式：<br>1.从本地系统中直接加载<br>2.通过网络下载 .class 文件<br>3.从zip，jar等归档文件中加载 .class 文件<br>4.从专有数据库中提取 .class 文件<br>5.将Java源文件动态编译为 .class 文件；</p>
 
       
     </div>
@@ -373,9 +387,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/hexo/" rel="tag"># hexo</a>
-          
-            <a href="/tags/blog/" rel="tag"># blog</a>
+            <a href="/tags/类加载器/" rel="tag"># 类加载器</a>
           
         </div>
       
@@ -388,18 +400,14 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/04/19/hello-world/" rel="next" title="Hello World">
-                <i class="fa fa-chevron-left"></i> Hello World
-              </a>
-            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/04/19/second/" rel="prev" title="热加载">
-                热加载 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/04/22/常量的本质含义与反编译及助记符详解/" rel="prev" title="常量的本质含义与反编译及助记符详解">
+                常量的本质含义与反编译及助记符详解 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -452,15 +460,24 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
               <img class="site-author-image" itemprop="image" src="/uploads/images/avatar.jpg" alt="wxmx2008">
             
               <p class="site-author-name" itemprop="name">wxmx2008</p>
-              <p class="site-description motion-element" itemprop="description">我的笔记</p>
+              <p class="site-description motion-element" itemprop="description">烈火燎原、寸草无生</p>
           </div>
 
           <nav class="site-state motion-element">
@@ -470,7 +487,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -492,7 +509,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">1</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -517,7 +534,7 @@
               <ul class="links-of-blogroll-list">
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.jianshu.com/users/0ad0a0afc409/latest_articles" title="DIY-green简书" target="_blank">DIY-green简书</a>
+                    <a href="https://github.com/ityouknow/spring-boot-examples" title="Spring Boot" target="_blank">Spring Boot</a>
                   </li>
                 
               </ul>
@@ -529,6 +546,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#XX-表示开启option选项"><span class="nav-number">1.</span> <span class="nav-text">-XX:+, 表示开启option选项</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#XX-表示关闭option选项"><span class="nav-number">2.</span> <span class="nav-text">-XX:-,表示关闭option选项</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#XX"><span class="nav-number">3.</span> <span class="nav-text">-XX:=</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -543,7 +576,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Android, DIY">
+  <meta name="keywords" content="类加载器,">
 
 
 
@@ -79,17 +79,21 @@
 
 
 
-<meta name="description" content="我的笔记">
-<meta property="og:type" content="website">
-<meta property="og:title" content="SpringBoot">
-<meta property="og:url" content="http://yoursite.com/SpringBoot/index.html">
+<meta name="description" content="当一个常量的值并非在编译期可以确定的，那么其值就不会被放到调用类的常量池中，这时在程序运行时，会导致主动使用这个常量所在的类，显然会导致这个类的初始化；  对于数组实例来说，其类型时由JVM在运行期动态生成的；一维数组的类型表示为：[Lcom.test.MyParent ，二维数组的类型表示为：[[Lcom.test.MyParent这种形式，JavaDoc经常将构成数组的元素称为Compone">
+<meta name="keywords" content="类加载器">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编译期常量与运行期常量的区别及数组创建本质分析">
+<meta property="og:url" content="http://yoursite.com/2019/04/22/编译期常量与运行期常量的区别及数组创建本质分析/index.html">
 <meta property="og:site_name" content="我的笔记">
-<meta property="og:description" content="我的笔记">
+<meta property="og:description" content="当一个常量的值并非在编译期可以确定的，那么其值就不会被放到调用类的常量池中，这时在程序运行时，会导致主动使用这个常量所在的类，显然会导致这个类的初始化；  对于数组实例来说，其类型时由JVM在运行期动态生成的；一维数组的类型表示为：[Lcom.test.MyParent ，二维数组的类型表示为：[[Lcom.test.MyParent这种形式，JavaDoc经常将构成数组的元素称为Compone">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-19T01:01:51.548Z">
+<meta property="og:image" content="http://yoursite.com/uploads/textImage/编译期常量与运行期常量的区别及数组创建本质分析_1.PNG">
+<meta property="og:image" content="http://yoursite.com/uploads/textImage/编译期常量与运行期常量的区别及数组创建本质分析_2.PNG">
+<meta property="og:updated_time" content="2019-04-22T07:03:12.720Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SpringBoot">
-<meta name="twitter:description" content="我的笔记">
+<meta name="twitter:title" content="编译期常量与运行期常量的区别及数组创建本质分析">
+<meta name="twitter:description" content="当一个常量的值并非在编译期可以确定的，那么其值就不会被放到调用类的常量池中，这时在程序运行时，会导致主动使用这个常量所在的类，显然会导致这个类的初始化；  对于数组实例来说，其类型时由JVM在运行期动态生成的；一维数组的类型表示为：[Lcom.test.MyParent ，二维数组的类型表示为：[[Lcom.test.MyParent这种形式，JavaDoc经常将构成数组的元素称为Compone">
+<meta name="twitter:image" content="http://yoursite.com/uploads/textImage/编译期常量与运行期常量的区别及数组创建本质分析_1.PNG">
 
 
 
@@ -119,13 +123,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/SpringBoot/">
+  <link rel="canonical" href="http://yoursite.com/2019/04/22/编译期常量与运行期常量的区别及数组创建本质分析/">
 
 
 
 
 
-  <title>SpringBoot | 我的笔记</title>
+  <title>编译期常量与运行期常量的区别及数组创建本质分析 | 我的笔记</title>
   
 
 
@@ -250,33 +254,185 @@
 
   <div id="posts" class="posts-expand">
     
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/22/编译期常量与运行期常量的区别及数组创建本质分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="wxmx2008">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="我的笔记">
+    </span>
+
     
-    
-    <div class="post-block page">
       <header class="post-header">
 
-	<h1 class="post-title" itemprop="name headline">SpringBoot</h1>
-
-
-
-</header>
-
-      
-      
-      
-      <div class="post-body">
         
         
+          <h1 class="post-title" itemprop="name headline">编译期常量与运行期常量的区别及数组创建本质分析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-22T14:53:48+08:00">
+                2019-04-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
           
-        
-      </div>
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/类加载器/" itemprop="url" rel="index">
+                    <span itemprop="name">类加载器</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
       
+
+      
+        <p><img src="/uploads/textImage/编译期常量与运行期常量的区别及数组创建本质分析_1.PNG" alt="Image text"></p>
+<p>当一个常量的值并非在编译期可以确定的，那么其值就不会被放到调用类的常量池中，这时在程序运<br>行时，会导致主动使用这个常量所在的类，显然会导致这个类的初始化；</p>
+<p><img src="/uploads/textImage/编译期常量与运行期常量的区别及数组创建本质分析_2.PNG" alt="Image text"></p>
+<p>对于数组实例来说，其类型时由JVM在运行期动态生成的；<br>一维数组的类型表示为：[Lcom.test.MyParent ，<br>二维数组的类型表示为：[[Lcom.test.MyParent<br>这种形式，JavaDoc经常将构成数组的元素称为Component，<br>实际上就是将数组降低一个维度后的类型，初始化一个数组实例并不会导致数组的Component的初始化；</p>
+<p>助记符：<br>anewarray：表示创建一个引用类型的（如类、接口、数组）数组，并将其引用值压入栈顶；<br>newarray:表示创建一个指定的原始类型（如int、float、char等）的数组，并将其引用值压入栈顶；</p>
+
       
     </div>
     
     
     
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/类加载器/" rel="tag"># 类加载器</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/22/常量的本质含义与反编译及助记符详解/" rel="next" title="常量的本质含义与反编译及助记符详解">
+                <i class="fa fa-chevron-left"></i> 常量的本质含义与反编译及助记符详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/22/接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析/" rel="prev" title="接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析">
+                接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
   </div>
 
 
@@ -317,7 +473,7 @@
               <img class="site-author-image" itemprop="image" src="/uploads/images/avatar.jpg" alt="wxmx2008">
             
               <p class="site-author-name" itemprop="name">wxmx2008</p>
-              <p class="site-description motion-element" itemprop="description">我的笔记</p>
+              <p class="site-description motion-element" itemprop="description">烈火燎原、寸草无生</p>
           </div>
 
           <nav class="site-state motion-element">
@@ -327,7 +483,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -349,7 +505,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">1</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -374,7 +530,7 @@
               <ul class="links-of-blogroll-list">
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.jianshu.com/users/0ad0a0afc409/latest_articles" title="DIY-green简书" target="_blank">DIY-green简书</a>
+                    <a href="https://github.com/ityouknow/spring-boot-examples" title="Spring Boot" target="_blank">Spring Boot</a>
                   </li>
                 
               </ul>
@@ -400,7 +556,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

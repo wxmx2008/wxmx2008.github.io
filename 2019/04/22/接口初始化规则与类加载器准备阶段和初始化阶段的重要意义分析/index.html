@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Android, DIY">
+  <meta name="keywords" content="类加载器,">
 
 
 
@@ -79,16 +79,21 @@
 
 
 
-<meta name="description" content="我的笔记">
-<meta property="og:type" content="website">
-<meta property="og:title" content="我的笔记">
-<meta property="og:url" content="http://yoursite.com/categories/SpringBoot/index.html">
+<meta name="description" content="接口中的field默认都是public static final 类型的，只要接口中的域在编译阶段无法确切知道其值，就会导致接口的初始化，当一个接口在初始化时，并不要求其父接口都完成了初始化只有在真正使用到父接口的时候（如引用到接口中所定义的常量时）才会初始化；calss文件被加载到内存并不一定会初始化这个类；结果分析：在main方法里调用Singleton的静态getInstance方法，会导致">
+<meta name="keywords" content="类加载器">
+<meta property="og:type" content="article">
+<meta property="og:title" content="接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析">
+<meta property="og:url" content="http://yoursite.com/2019/04/22/接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析/index.html">
 <meta property="og:site_name" content="我的笔记">
-<meta property="og:description" content="我的笔记">
+<meta property="og:description" content="接口中的field默认都是public static final 类型的，只要接口中的域在编译阶段无法确切知道其值，就会导致接口的初始化，当一个接口在初始化时，并不要求其父接口都完成了初始化只有在真正使用到父接口的时候（如引用到接口中所定义的常量时）才会初始化；calss文件被加载到内存并不一定会初始化这个类；结果分析：在main方法里调用Singleton的静态getInstance方法，会导致">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/uploads/textImage/接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析_1.PNG">
+<meta property="og:image" content="http://yoursite.com/uploads/textImage/接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析_2.PNG">
+<meta property="og:updated_time" content="2019-04-22T07:13:24.960Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="我的笔记">
-<meta name="twitter:description" content="我的笔记">
+<meta name="twitter:title" content="接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析">
+<meta name="twitter:description" content="接口中的field默认都是public static final 类型的，只要接口中的域在编译阶段无法确切知道其值，就会导致接口的初始化，当一个接口在初始化时，并不要求其父接口都完成了初始化只有在真正使用到父接口的时候（如引用到接口中所定义的常量时）才会初始化；calss文件被加载到内存并不一定会初始化这个类；结果分析：在main方法里调用Singleton的静态getInstance方法，会导致">
+<meta name="twitter:image" content="http://yoursite.com/uploads/textImage/接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析_1.PNG">
 
 
 
@@ -118,13 +123,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/categories/SpringBoot/">
+  <link rel="canonical" href="http://yoursite.com/2019/04/22/接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析/">
 
 
 
 
 
-  <title>分类: SpringBoot | 我的笔记</title>
+  <title>接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析 | 我的笔记</title>
   
 
 
@@ -143,7 +148,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -247,53 +252,180 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block category">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>SpringBoot<small>分类</small>
-        </h1>
-      </div>
+  
 
-      
-        
+  
+  
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/22/接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="wxmx2008">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="我的笔记">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2019/04/19/second/" itemprop="url">
-              
-                <span itemprop="name">热加载</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-04-19T08:52:18+08:00" content="2019-04-19">
-          04-19
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-22T15:10:15+08:00">
+                2019-04-22
+              </time>
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/类加载器/" itemprop="url" rel="index">
+                    <span itemprop="name">类加载器</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="/uploads/textImage/接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析_1.PNG" alt="Image text"><br>接口中的field默认都是public static final 类型的，<br>只要接口中的域在编译阶段无法确切知道其值，就会导致接口的<br>初始化，当一个接口在初始化时，并不要求其父接口都完成了初始化<br>只有在真正使用到父接口的时候（如引用到接口中所定义的常量时）<br>才会初始化；<br>calss文件被加载到内存并不一定会初始化这个类；<br><img src="/uploads/textImage/接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析_2.PNG" alt="Image text"><br>结果分析：<br>在main方法里调用Singleton的静态getInstance方法，会导致Singleton类的初始化，<br>而在执行初始化之前，在连接的准备阶段，会为Singleton类的静态变量分配内存空间并赋初值，<br>也就是依次为count1赋值0，为singleton赋值null，为count2赋值0，在执行初始化阶段，<br>会为Singleton类的静态变量按照程序书写顺序依次赋默认值，在本示例中也就是不为count1赋值，<br>为singleton赋值为new Singleton() 声明的实例，此时执行构造方法，由于准备阶段结束后，<br>count1，count2的值都为0，所以构造方法结束后，他们的值为1，为count2赋值0，也即是程序<br>显示声明的值0，初始化过程结束；</p>
 
       
     </div>
+    
+    
+    
 
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/类加载器/" rel="tag"># 类加载器</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/22/编译期常量与运行期常量的区别及数组创建本质分析/" rel="next" title="编译期常量与运行期常量的区别及数组创建本质分析">
+                <i class="fa fa-chevron-left"></i> 编译期常量与运行期常量的区别及数组创建本质分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
 
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -301,6 +433,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -329,7 +465,7 @@
               <img class="site-author-image" itemprop="image" src="/uploads/images/avatar.jpg" alt="wxmx2008">
             
               <p class="site-author-name" itemprop="name">wxmx2008</p>
-              <p class="site-description motion-element" itemprop="description">我的笔记</p>
+              <p class="site-description motion-element" itemprop="description">烈火燎原、寸草无生</p>
           </div>
 
           <nav class="site-state motion-element">
@@ -339,7 +475,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -361,7 +497,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">1</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -386,7 +522,7 @@
               <ul class="links-of-blogroll-list">
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.jianshu.com/users/0ad0a0afc409/latest_articles" title="DIY-green简书" target="_blank">DIY-green简书</a>
+                    <a href="https://github.com/ityouknow/spring-boot-examples" title="Spring Boot" target="_blank">Spring Boot</a>
                   </li>
                 
               </ul>
@@ -412,7 +548,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
@@ -538,6 +674,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
