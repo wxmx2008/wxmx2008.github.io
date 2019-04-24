@@ -79,21 +79,21 @@
 
 
 
-<meta name="description" content="当一个常量的值并非在编译期可以确定的，那么其值就不会被放到调用类的常量池中，这时在程序运行时，会导致主动使用这个常量所在的类，显然会导致这个类的初始化；  对于数组实例来说，其类型时由JVM在运行期动态生成的；一维数组的类型表示为：[Lcom.test.MyParent ，二维数组的类型表示为：[[Lcom.test.MyParent这种形式，JavaDoc经常将构成数组的元素称为Compone">
+<meta name="description" content="示例1 当java虚拟机初始化一个类时，要求它的所有父类都已经被初始化，但是这条规则并适用接口：在初始化一个类时，并不会先初始化它所实现的接口；在初始化一个接口时，并不会先初始化它的父接口；因此，一个父接口并不会因为它的子接口或者实现类的初始化而初始化，只有当程序首次使用特定接口的静态变量时，才会导致接口的初始化。只有当程序访问的静态变量或静态方法确实在当前类或当前接口中定义时，才可以认为是对类或">
 <meta name="keywords" content="类加载器">
 <meta property="og:type" content="article">
-<meta property="og:title" content="编译期常量与运行期常量的区别及数组创建本质分析">
-<meta property="og:url" content="http://yoursite.com/2019/04/22/编译期常量与运行期常量的区别及数组创建本质分析/index.html">
+<meta property="og:title" content="接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析">
+<meta property="og:url" content="http://yoursite.com/2019/04/24/接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析/index.html">
 <meta property="og:site_name" content="我的笔记">
-<meta property="og:description" content="当一个常量的值并非在编译期可以确定的，那么其值就不会被放到调用类的常量池中，这时在程序运行时，会导致主动使用这个常量所在的类，显然会导致这个类的初始化；  对于数组实例来说，其类型时由JVM在运行期动态生成的；一维数组的类型表示为：[Lcom.test.MyParent ，二维数组的类型表示为：[[Lcom.test.MyParent这种形式，JavaDoc经常将构成数组的元素称为Compone">
+<meta property="og:description" content="示例1 当java虚拟机初始化一个类时，要求它的所有父类都已经被初始化，但是这条规则并适用接口：在初始化一个类时，并不会先初始化它所实现的接口；在初始化一个接口时，并不会先初始化它的父接口；因此，一个父接口并不会因为它的子接口或者实现类的初始化而初始化，只有当程序首次使用特定接口的静态变量时，才会导致接口的初始化。只有当程序访问的静态变量或静态方法确实在当前类或当前接口中定义时，才可以认为是对类或">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://yoursite.com/uploads/textImage/编译期常量与运行期常量的区别及数组创建本质分析_1.PNG">
-<meta property="og:image" content="http://yoursite.com/uploads/textImage/编译期常量与运行期常量的区别及数组创建本质分析_2.PNG">
-<meta property="og:updated_time" content="2019-04-22T07:03:12.720Z">
+<meta property="og:image" content="http://yoursite.com/uploads/textImage/接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析.PNG">
+<meta property="og:image" content="http://yoursite.com/uploads/textImage/接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析_1.PNG">
+<meta property="og:updated_time" content="2019-04-24T01:21:55.346Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="编译期常量与运行期常量的区别及数组创建本质分析">
-<meta name="twitter:description" content="当一个常量的值并非在编译期可以确定的，那么其值就不会被放到调用类的常量池中，这时在程序运行时，会导致主动使用这个常量所在的类，显然会导致这个类的初始化；  对于数组实例来说，其类型时由JVM在运行期动态生成的；一维数组的类型表示为：[Lcom.test.MyParent ，二维数组的类型表示为：[[Lcom.test.MyParent这种形式，JavaDoc经常将构成数组的元素称为Compone">
-<meta name="twitter:image" content="http://yoursite.com/uploads/textImage/编译期常量与运行期常量的区别及数组创建本质分析_1.PNG">
+<meta name="twitter:title" content="接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析">
+<meta name="twitter:description" content="示例1 当java虚拟机初始化一个类时，要求它的所有父类都已经被初始化，但是这条规则并适用接口：在初始化一个类时，并不会先初始化它所实现的接口；在初始化一个接口时，并不会先初始化它的父接口；因此，一个父接口并不会因为它的子接口或者实现类的初始化而初始化，只有当程序首次使用特定接口的静态变量时，才会导致接口的初始化。只有当程序访问的静态变量或静态方法确实在当前类或当前接口中定义时，才可以认为是对类或">
+<meta name="twitter:image" content="http://yoursite.com/uploads/textImage/接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析.PNG">
 
 
 
@@ -123,13 +123,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/04/22/编译期常量与运行期常量的区别及数组创建本质分析/">
+  <link rel="canonical" href="http://yoursite.com/2019/04/24/接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析/">
 
 
 
 
 
-  <title>编译期常量与运行期常量的区别及数组创建本质分析 | 我的笔记</title>
+  <title>接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析 | 我的笔记</title>
   
 
 
@@ -256,7 +256,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/22/编译期常量与运行期常量的区别及数组创建本质分析/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/24/接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="wxmx2008">
@@ -273,7 +273,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">编译期常量与运行期常量的区别及数组创建本质分析</h1>
+          <h1 class="post-title" itemprop="name headline">接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析</h1>
         
 
         <div class="post-meta">
@@ -285,8 +285,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-22T14:53:48+08:00">
-                2019-04-22
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-24T09:08:13+08:00">
+                2019-04-24
               </time>
             
 
@@ -356,11 +356,12 @@
       
 
       
-        <p><img src="/uploads/textImage/编译期常量与运行期常量的区别及数组创建本质分析_1.PNG" alt="Image text"></p>
-<p>当一个常量的值并非在编译期可以确定的，那么其值就不会被放到调用类的常量池中，这时在程序运<br>行时，会导致主动使用这个常量所在的类，显然会导致这个类的初始化；</p>
-<p><img src="/uploads/textImage/编译期常量与运行期常量的区别及数组创建本质分析_2.PNG" alt="Image text"></p>
-<p>对于数组实例来说，其类型时由JVM在运行期动态生成的；<br>一维数组的类型表示为：[Lcom.test.MyParent ，<br>二维数组的类型表示为：[[Lcom.test.MyParent<br>这种形式，JavaDoc经常将构成数组的元素称为Component，<br>实际上就是将数组降低一个维度后的类型，初始化一个数组实例并不会导致数组的Component的初始化；</p>
-<p>助记符：<br>anewarray：表示创建一个引用类型的（如类、接口、数组）数组，并将其引用值压入栈顶；<br>newarray:表示创建一个指定的原始类型（如int、float、char等）的数组，并将其引用值压入栈顶；</p>
+        <h3 id="示例1"><a href="#示例1" class="headerlink" title="示例1"></a>示例1</h3><p><img src="/uploads/textImage/接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析.PNG" alt="Image text"></p>
+<p>当java虚拟机初始化一个类时，要求它的所有父类都已经被初始化，但是这条规则并适用接口：在初始化一个类时，<br>并不会先初始化它所实现的接口；在初始化一个接口时，并不会先初始化它的父接口；因此，一个父接口并不会因为<br>它的子接口或者实现类的初始化而初始化，只有当程序首次使用特定接口的静态变量时，才会导致接口的初始化。<br>只有当程序访问的静态变量或静态方法确实在当前类或当前接口中定义时，才可以认为是对类或接口的主动使用；<br>调用ClassLoader类的loadClass方法加载一个类，并不是对类的主动使用，不会导致类的初始化；</p>
+<p>接口中的field默认都是public static final 类型的，<br>只要接口中的域在编译阶段无法确切知道其值，就会导致接口的<br>初始化，当一个接口或类在初始化时，并不要求其父接口都完成了初始化，<br>但父接口会被加载，只有在真正使用到父接口的时候（如引用到接口<br>中所定义的常量时）才会初始化；<br>calss文件被加载到内存并不一定会初始化这个类</p>
+<h3 id="示例2"><a href="#示例2" class="headerlink" title="示例2"></a>示例2</h3><p><img src="/uploads/textImage/接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析_1.PNG" alt="Image text"></p>
+<h3 id="结果分析"><a href="#结果分析" class="headerlink" title="结果分析"></a>结果分析</h3><p>在main方法里调用Singleton的静态getInstance方法，会导致Singleton类的初始化，<br>而在执行初始化之前，在连接的准备阶段，会为Singleton类的静态变量分配内存空间并赋默认<br>值，也就是依次为count1 分配4个字节的内存空间并赋值0，为singleton赋值null，为count2<br>赋值0，在执行初始化阶段，会为Singleton类的静态变量按照程序书写顺序依次赋初值，<br>在本示例中也就是不为count1赋值，为singleton赋值为new Singleton() 声明的实例，<br>此时执行构造方法，由于准备阶段结束后，count1，count2的值都为0，所以构造方法结束后，<br>他们的值为1，为count2赋值0，也即是程序显示声明的值0，初始化过程结束；<br>静态变量的声明语句，以及静态代码块都被看做类的初始化语句，java虚拟机会按照初始化语<br>句在类文件中的先后顺序来依次执行它们；</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>无论接口或类，只要是final类型的变量无法在编译期确定其值，在类调用这个静态变量时就会导致接口或类的初始化，如果是类，则会先初始化父类再初始化子类，如果是调用子接口的变量，则会加载父接口，父接口不会执行初始化，子接口会初始化；如果这个final常量在编译期能确定其值，那么这么这个常量的值就会被放在调用类的常量池中，在编译完成后，这个常量声明的类与调用类则没有关系，程序执行时，类或接口既不会加载，更不可能初始化。个人认为这么做的好处是考虑了类加载器的优化，不让其去做无用功；以上只是对final的总结，接口中的field默认都是final的，如果类的变量只有static修饰，则首次调用这个类的静态变量就是对这个类的首次主动使用，会触发类的加载，有父类则先加载父类，有父接口则加载父接口，不执行初始化父接口；</p>
 
       
     </div>
@@ -391,8 +392,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/04/22/常量的本质含义与反编译及助记符详解/" rel="next" title="常量的本质含义与反编译及助记符详解">
-                <i class="fa fa-chevron-left"></i> 常量的本质含义与反编译及助记符详解
+              <a href="/2019/04/22/编译期常量与运行期常量的区别及数组创建本质分析/" rel="next" title="编译期常量与运行期常量的区别及数组创建本质分析">
+                <i class="fa fa-chevron-left"></i> 编译期常量与运行期常量的区别及数组创建本质分析
               </a>
             
           </div>
@@ -400,10 +401,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/04/24/接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析/" rel="prev" title="接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析">
-                接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -455,8 +452,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -532,6 +538,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#示例1"><span class="nav-number">1.</span> <span class="nav-text">示例1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例2"><span class="nav-number">2.</span> <span class="nav-text">示例2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#结果分析"><span class="nav-number">3.</span> <span class="nav-text">结果分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
