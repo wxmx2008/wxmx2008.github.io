@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="类加载器,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="类的加载 类加载器的作用就是将class文件加载到VM中，并生成一个class对象，这个对象中封装了相应类的数据结构；  一个class loader是一个用于加载类的对象，ClassLoader类是一个抽象类，当给定一个类的二进制名字的时候，class loader就会尝试去定位或生成一些数据，这些数据就构成了类的定义，一种常用的方式就是将给定的名字转换成一个文件名，然后根据文件名从文件系统中加">
+<meta name="keywords" content="类加载器">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ClassLoader源码分析与实例分析">
+<meta property="og:url" content="http://yoursite.com/2019/04/30/ClassLoader源码分析与实例分析/index.html">
+<meta property="og:site_name" content="我的笔记">
+<meta property="og:description" content="类的加载 类加载器的作用就是将class文件加载到VM中，并生成一个class对象，这个对象中封装了相应类的数据结构；  一个class loader是一个用于加载类的对象，ClassLoader类是一个抽象类，当给定一个类的二进制名字的时候，class loader就会尝试去定位或生成一些数据，这些数据就构成了类的定义，一种常用的方式就是将给定的名字转换成一个文件名，然后根据文件名从文件系统中加">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/uploads/textImage/ClassLoader源码分析与实例分析_1.PNG">
+<meta property="og:image" content="http://yoursite.com/uploads/textImage/ClassLoader源码分析与实例分析_2.PNG">
+<meta property="og:image" content="http://yoursite.com/uploads/textImage/ClassLoader源码分析与实例分析_3.PNG">
+<meta property="og:image" content="http://yoursite.com/uploads/textImage/ClassLoader源码分析与实例分析_4.PNG">
+<meta property="og:image" content="http://yoursite.com/uploads/textImage/ClassLoader源码分析与实例分析_5.PNG">
+<meta property="og:image" content="http://yoursite.com/uploads/textImage/ClassLoader源码分析与实例分析_6.PNG">
+<meta property="og:image" content="http://yoursite.com/uploads/textImage/ClassLoader源码分析与实例分析_7.PNG">
+<meta property="og:image" content="http://yoursite.com/uploads/textImage/ClassLoader源码分析与实例分析_8.PNG">
+<meta property="og:image" content="http://yoursite.com/uploads/textImage/ClassLoader源码分析与实例分析_9.PNG">
+<meta property="og:image" content="http://yoursite.com/uploads/textImage/ClassLoader源码分析与实例分析_10.PNG">
+<meta property="og:image" content="http://yoursite.com/uploads/textImage/ClassLoader源码分析与实例分析_11.PNG">
+<meta property="og:image" content="http://yoursite.com/uploads/textImage/ClassLoader源码分析与实例分析_12.PNG">
+<meta property="og:updated_time" content="2019-04-30T05:14:53.072Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ClassLoader源码分析与实例分析">
+<meta name="twitter:description" content="类的加载 类加载器的作用就是将class文件加载到VM中，并生成一个class对象，这个对象中封装了相应类的数据结构；  一个class loader是一个用于加载类的对象，ClassLoader类是一个抽象类，当给定一个类的二进制名字的时候，class loader就会尝试去定位或生成一些数据，这些数据就构成了类的定义，一种常用的方式就是将给定的名字转换成一个文件名，然后根据文件名从文件系统中加">
+<meta name="twitter:image" content="http://yoursite.com/uploads/textImage/ClassLoader源码分析与实例分析_1.PNG">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'wxmx2008'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/04/30/ClassLoader源码分析与实例分析/">
+
+
+
+
+
+  <title>ClassLoader源码分析与实例分析 | 我的笔记</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">我的笔记</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/30/ClassLoader源码分析与实例分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="wxmx2008">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="我的笔记">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ClassLoader源码分析与实例分析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-30T12:43:38+08:00">
+                2019-04-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/类加载器/" itemprop="url" rel="index">
+                    <span itemprop="name">类加载器</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="类的加载"><a href="#类的加载" class="headerlink" title="类的加载"></a>类的加载</h3><blockquote>
+<p>类加载器的作用就是将class文件加载到VM中，并生成一个class对象，这个对象中封装了相应类的数据结构；</p>
+</blockquote>
+<p>一个class loader是一个用于加载类的对象，ClassLoader类是一个抽象类，当给定一个类的二进制名字的时候，class loader就会尝试去定位或生成一些数据，这些数据就构成了类的定义，一种常用的方式就是将给定的名字转换成一个文件名，然后根据文件名从文件系统中加载对应的class文件。</p>
+<p>每一个class对象都包含了一个定义它的Classloader的引用。</p>
+<p>对于数组类型的class对象并不是由class loader来创建，而是由JVM运行时按需自动创建，就是说非数组类型的class对象一定由class loader创建，<br>对于数组类型的class对象来说，这个class对象的class loader是和数组中的元素的class对象的class loader是一样的，如果元素类型是原型，则数组类型没有class loader。</p>
+<p>示例：<br><img src="/uploads/textImage/ClassLoader源码分析与实例分析_1.PNG" alt="Image text"></p>
+<p>第一个空是因为 String类型的class的类加载器是BootStrap类加载器，在HotSpot虚拟机的实现中，BootStrap用null表示，第二个null是因为int是原型；</p>
+<p>我们的应用实现ClassLoader的子类是为了扩展JVM动态加载类的方式。</p>
+<p>ClassLoader类使用双亲委托机制来查找类和资源，每一个ClassLoader的实例都会关联一个父class loader，当ClassLoaderd的实例在被要求去查找class或资源时，它会在自己尝试去查找之前把这个查找任务代理给自己的父class loader。虚拟机内建的类加载器叫做bootstrap类加载器，它自己没有双亲，但是可以作为其他类加载器实例的双亲；</p>
+<p>支持并发加载的类加载器叫做 parallel capable 类加载器，这样的类加载器需要在他们的类初始化期间通过调用<br>ClassLoader.registerAsParallelCapable 这个方法注册他们自己，注意 ClassLoader类默认就是被注册为<br>parallel capable 类加载器的，然而它的子类如果需要并发加载的能力还是需要进行注册的。</p>
+<p>在委托模型并不是严格要求层次化的环境下，类加载器需要具有并发能力，否则类加载会导致死锁，因为加载器的锁在类加载的过程中会被持有；</p>
+<p>通常情况下，java虚拟机会以一种平台相关的方式从本地文件系统中加载类，比如，在UNIX系统上，虚拟机会从CLASSPATH环境变量指定的目录去加载类，</p>
+<p>然而有些类并不是来自文件，而是来自其他来源，比如网络，或者由应用来创建的（动态代理），在这种情况下，defineClass这个方法可以将字节数组转换成一个Class实例，这个新定义的实例可通过Class.newInstance创建；</p>
+<p>由类加载器创建的对象里的方法或构造方法还可能引用义它的类，为了确定被引用的类都是什么，Java虚拟机会调用最初创建这个类的类加载器的loadClass方法；</p>
+<h3 id="自定义类加载器注意事项"><a href="#自定义类加载器注意事项" class="headerlink" title="自定义类加载器注意事项"></a>自定义类加载器注意事项</h3><p>自定义类加载器需要继承ClassLoader并重写findClass方法，若不在自定义的类加载器的构造方法中显示地调用父类有参的构造方法，并传入一个指定的类加载器作为自定义类加载器的父类，则自定义类加载器默认的父类是系统类加载器；findClass的作用是用指定的二进制名字查找class对象，这个方法会在jvm检查完父类加载器之后被loadClass方法调用；loadClass方法的作用是用指定的二进制名字加载类，这个方法会在jvm<br>解析类的引用的时候被调用，loadClass方法和它的重载方法加载类的方式是一样的，作用相同，loadClass方法的默认实现是按照以下顺序去查找类的：<br>1.调用 findLoadedClass 方法确认这个方法是否已经被加载；<br>2.调用父类加载器的 loadClass方法，如果父类为null，则使用虚拟机内建的类加载器；<br>3.调用findClass方法去查找类；</p>
+<h3 id="命名空间"><a href="#命名空间" class="headerlink" title="命名空间"></a>命名空间</h3><p>每个类加载器都有自己的命名空间，命名空间由该加载器及其所有父加载器所加载的类组成；<br>在同一命名空间中，不会出现类的完整名字（包括类的包名）相同的两个类，在不同的命名空间中，由可能出<br>现类的完整名字（包括类的包名）相同的两个类；<br>结论：同一命名空间下的一个class文件只会被加载一次；不同命名空间下的相同class文件会被加载多次，生成多个不同的class对象，这些class对象里的保存的类的定义的数据是相同的；<br>以下代码验证类加载器机制及上述命名空间的结论：<br><img src="/uploads/textImage/ClassLoader源码分析与实例分析_2.PNG" alt="Image text"><br><img src="/uploads/textImage/ClassLoader源码分析与实例分析_3.PNG" alt="Image text"><br><img src="/uploads/textImage/ClassLoader源码分析与实例分析_4.PNG" alt="Image text"></p>
+<h3 id="测试1"><a href="#测试1" class="headerlink" title="测试1"></a>测试1</h3><p><img src="/uploads/textImage/ClassLoader源码分析与实例分析_5.PNG" alt="Image text"><br>当执行以上代码时，如果当前工程下存在Test.class文件，则当myTest1类加载器调用loadClass加载这个class文件时，先会检查父加载器是否已加载这个class文件，已加载则返回，未加载则调用父加载器的loadClass的方法，而父加载器也会重复此步骤，每一个子类加载器都会持有一个父加载器的引用，当父加载器为null时，就会调用虚拟机内建的加载器，在本例中，BootStrap和Extension类加载器都无法加载这个class文件，系统类加载器可以加载，此时运行结果是：<br><img src="/uploads/textImage/ClassLoader源码分析与实例分析_6.PNG" alt="Image text"><br>如果删除工程下的这个class文件，则系统类加载器也无法加载，加载任务由自定义的类加载器myTest1来加载，重写的findClass方法就会被调用，将指定的class文件以字节数组的形式加载到内存，然后调用父类的defineClass方法将字节数组中的内容转换成一个Class对象，此时运行结果是：<br><img src="/uploads/textImage/ClassLoader源码分析与实例分析_7.PNG" alt="Image text"></p>
+<h3 id="测试2"><a href="#测试2" class="headerlink" title="测试2"></a>测试2</h3><p><img src="/uploads/textImage/ClassLoader源码分析与实例分析_8.PNG" alt="Image text"><br>删除工程下的Test.class文件，然后运行主方法，两个声明的类加载器的父类都是系统类加载器，父类无法加载，则两个子类加载，且处于两个命名空间下，则生成两个Class对象，此时执行结果是：<br><img src="/uploads/textImage/ClassLoader源码分析与实例分析_9.PNG" alt="Image text"><br>如果将//12行代码替换成<br>MyTest1 myTest2=new MyTest1(myTest1,”myTest2”);<br>此时myTest2类加载器的直接父类加载器是myTest1类加载器，他们处于同一个命名空间下，myTest1加载成功生成Class对象后，子类加载器请求加载时则直接返回这个Class对象，此时运行结果时：<br><img src="/uploads/textImage/ClassLoader源码分析与实例分析_10.PNG" alt="Image text"></p>
+<h3 id="类的卸载"><a href="#类的卸载" class="headerlink" title="类的卸载"></a>类的卸载</h3><p>当Sample类被加载，连接，初始化后，它的生命周期就开始了。当代表Sample类的Class对象不在被引用，即不可触及时，Class对象就会结束生命周期，Sample在方法区内的数据也会被卸载，从而结束Sample类的生命周期。<br>一个类何时结束生命周期，取决于代表它的Class对象何时结束生命周期；<br>由java虚拟机自带的累加载器所加载的类，在虚拟机的生命周期中，始终不会被卸载，前面已经介绍过，java虚拟机自带的类加载器包括启动类加载器，扩展类加载器，系统类加载器，java虚拟机本身始终会引用这些类加载器，而这些类加载器会始终引用它们所加载的类的Class对象，因此这些Class对象始终是可触及的。<br>由用户自定义的类加载器所加载的类是可以被卸载的；</p>
+<h3 id="验证类的卸载"><a href="#验证类的卸载" class="headerlink" title="验证类的卸载"></a>验证类的卸载</h3><p><img src="/uploads/textImage/ClassLoader源码分析与实例分析_11.PNG" alt="Image text"></p>
+<p>删除工程下的Test.class文件，让自定义类加载器区加载Test类，执行以上代码，并在启动时加上虚拟机参数：-XX:+TraceClassUnloading,运行结果如下：<br><img src="/uploads/textImage/ClassLoader源码分析与实例分析_12.PNG" alt="Image text"><br>从打印结果可以看到只要没有对象或类加载器对Class对象持有引用，调用垃圾回收后，之前被加载的Test类就会被卸载；</p>
+<h3 id="二进制名字"><a href="#二进制名字" class="headerlink" title="二进制名字"></a>二进制名字</h3><p>Any class name provided as a String parameter to methods inClassLoader must be a binary name<br>as defined by The Java Language Specification<br>Examples of valid class names include:<br>“java.lang.String”<br>“javax.swing.JSpinner$DefaultEditor”<br>“java.security.KeyStore$Builder$FileBuilder$1”；表示内部类FileBuilder的第一个匿名内部类；<br>“java.net.URLClassLoader$3$1”</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/类加载器/" rel="tag"># 类加载器</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/30/类加载器双亲委托机制详解/" rel="next" title="类加载器双亲委托机制详解">
+                <i class="fa fa-chevron-left"></i> 类加载器双亲委托机制详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/images/avatar.jpg" alt="wxmx2008">
+            
+              <p class="site-author-name" itemprop="name">wxmx2008</p>
+              <p class="site-description motion-element" itemprop="description">烈火燎原、寸草无生</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/ityouknow/spring-boot-examples" title="Spring Boot" target="_blank">Spring Boot</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#类的加载"><span class="nav-number">1.</span> <span class="nav-text">类的加载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义类加载器注意事项"><span class="nav-number">2.</span> <span class="nav-text">自定义类加载器注意事项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#命名空间"><span class="nav-number">3.</span> <span class="nav-text">命名空间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试1"><span class="nav-number">4.</span> <span class="nav-text">测试1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试2"><span class="nav-number">5.</span> <span class="nav-text">测试2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类的卸载"><span class="nav-number">6.</span> <span class="nav-text">类的卸载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#验证类的卸载"><span class="nav-number">7.</span> <span class="nav-text">验证类的卸载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二进制名字"><span class="nav-number">8.</span> <span class="nav-text">二进制名字</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wxmx2008</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
