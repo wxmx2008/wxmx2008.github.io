@@ -252,7 +252,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/07/自定义类加载器在复杂类加载情况下的分析(1)/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/07/线程上下文类加载器分析与实现  /">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="wxmx2008">
@@ -271,7 +271,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/05/07/自定义类加载器在复杂类加载情况下的分析(1)/" itemprop="url">自定义类加载器在复杂类加载情况下的分析</a></h1>
+                <a class="post-title-link" href="/2019/05/07/线程上下文类加载器分析与实现  /" itemprop="url">未命名</a></h1>
         
 
         <div class="post-meta">
@@ -283,7 +283,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-07T12:55:07+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-07T12:58:44+08:00">
                 2019-05-07
               </time>
             
@@ -293,39 +293,6 @@
             
           </span>
 
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JVM/" itemprop="url" rel="index">
-                    <span itemprop="name">JVM</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JVM/类加载器/" itemprop="url" rel="index">
-                    <span itemprop="name">类加载器</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
           
 
           
@@ -356,11 +323,12 @@
       
         
           
-          12345678910111213141516171819202122232425public class MyCat &#123;    public MyCat()&#123;        System.out.println(&quot;MyCat is loaded by:&quot;+t
+          当前类加载器（Current ClassLoader）每个类都会使用自己的类加载器（即加载自身的类加载器）来去加载其他类（指的是所依赖的类），如果ClassX引用了ClassY，那么ClassX的类加载器就会去加载ClassY（前提是ClassY尚未被加载）
+线程上下文类加载器（Context Cl
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2019/05/07/自定义类加载器在复杂类加载情况下的分析(1)/#more" rel="contents">
+            <a class="btn" href="/2019/05/07/线程上下文类加载器分析与实现  /#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
