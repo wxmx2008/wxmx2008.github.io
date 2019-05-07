@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="类加载器,">
+  <meta name="keywords" content="Android, DIY">
 
 
 
@@ -79,18 +79,16 @@
 
 
 
-<meta name="description" content="类加载器分为4种：  1.根类（Bootstrap）加载器启动类加载器主要加载的是JVM自身需要的类，这个类加载使用C++语言实现的，是虚拟机自身的一部分，它负责将 &amp;lt;JAVA_HOME&amp;gt;/lib路径下的核心类库或-Xbootclasspath参数指定的路径下的jar包加载到内存中；2.扩展类（Extension）加载器扩展类加载器是指sun.misc.Launcher$ExtCla">
-<meta name="keywords" content="类加载器">
-<meta property="og:type" content="article">
-<meta property="og:title" content="类加载器双亲委托机制详解">
-<meta property="og:url" content="http://yoursite.com/2019/04/30/类加载器双亲委托机制详解/index.html">
+<meta name="description" content="烈火燎原、寸草无生">
+<meta property="og:type" content="website">
+<meta property="og:title" content="我的笔记">
+<meta property="og:url" content="http://yoursite.com/archives/2019/05/index.html">
 <meta property="og:site_name" content="我的笔记">
-<meta property="og:description" content="类加载器分为4种：  1.根类（Bootstrap）加载器启动类加载器主要加载的是JVM自身需要的类，这个类加载使用C++语言实现的，是虚拟机自身的一部分，它负责将 &amp;lt;JAVA_HOME&amp;gt;/lib路径下的核心类库或-Xbootclasspath参数指定的路径下的jar包加载到内存中；2.扩展类（Extension）加载器扩展类加载器是指sun.misc.Launcher$ExtCla">
+<meta property="og:description" content="烈火燎原、寸草无生">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-30T04:43:07.637Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="类加载器双亲委托机制详解">
-<meta name="twitter:description" content="类加载器分为4种：  1.根类（Bootstrap）加载器启动类加载器主要加载的是JVM自身需要的类，这个类加载使用C++语言实现的，是虚拟机自身的一部分，它负责将 &amp;lt;JAVA_HOME&amp;gt;/lib路径下的核心类库或-Xbootclasspath参数指定的路径下的jar包加载到内存中；2.扩展类（Extension）加载器扩展类加载器是指sun.misc.Launcher$ExtCla">
+<meta name="twitter:title" content="我的笔记">
+<meta name="twitter:description" content="烈火燎原、寸草无生">
 
 
 
@@ -120,13 +118,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/04/30/类加载器双亲委托机制详解/">
+  <link rel="canonical" href="http://yoursite.com/archives/2019/05/">
 
 
 
 
 
-  <title>类加载器双亲委托机制详解 | 我的笔记</title>
+  <title>归档 | 我的笔记</title>
   
 
 
@@ -145,7 +143,7 @@
     
   
 
-  <div class="container sidebar-position-left page-post-detail">
+  <div class="container sidebar-position-left page-archive">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -239,195 +237,72 @@
           <div id="content" class="content">
             
 
-  <div id="posts" class="posts-expand">
-    
+  
+  
+  
+  <div class="post-block archive">
+    <div id="posts" class="posts-collapse">
+      <span class="archive-move-on"></span>
 
-  
+      <span class="archive-page-counter">
+        
+        
+        
+          
+        
+        嗯..! 目前共计 7 篇日志。 继续努力。
+      </span>
 
-  
-  
-  
+      
+
+        
+        
+        
+
+        
+          
+          <div class="collection-title">
+            <h1 class="archive-year" id="archive-year-2019">2019</h1>
+          </div>
+        
+        
+
+        
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/30/类加载器双亲委托机制详解/">
+    <header class="post-header">
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="wxmx2008">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="我的笔记">
-    </span>
-
-    
-      <header class="post-header">
-
+      <h2 class="post-title">
         
+            <a class="post-title-link" href="/2019/05/07/自定义类加载器在复杂类加载情况下的分析/" itemprop="url">
+              
+                <span itemprop="name">自定义类加载器在复杂类加载情况下的分析</span>
+              
+            </a>
         
-          <h1 class="post-title" itemprop="name headline">类加载器双亲委托机制详解</h1>
-        
+      </h2>
 
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-30T12:41:26+08:00">
-                2019-04-30
-              </time>
-            
+      <div class="post-meta">
+        <time class="post-time" itemprop="dateCreated" datetime="2019-05-07T12:49:34+08:00" content="2019-05-07">
+          05-07
+        </time>
+      </div>
 
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JVM/" itemprop="url" rel="index">
-                    <span itemprop="name">JVM</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JVM/类加载器/" itemprop="url" rel="index">
-                    <span itemprop="name">类加载器</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        <blockquote>
-<p>类加载器分为4种：</p>
-</blockquote>
-<p>1.根类（Bootstrap）加载器<br>启动类加载器主要加载的是JVM自身需要的类，这个类加载使用C++语言实现的，是虚拟机自身的一部分，它负责将 &lt;JAVA_HOME&gt;/lib路径下的核心类库或-Xbootclasspath参数指定的路径下的jar包加载到内存中；<br>2.扩展类（Extension）加载器<br>扩展类加载器是指sun.misc.Launcher$ExtClassLoader类，由Java语言实现的，是Launcher的静态内部类，它负责加载&lt;JAVA_HOME&gt;/lib/ext目录下或者由系统变量-Djava.ext.dir指定位路径中的类库<br>扩展类加载器加载类是加载以jar包形式存在的class的，单独的class文件不加载<br>3.应用类/系统类（System）加载器<br>也称应用程序加载器是指sun.misc.Launcher$AppClassLoader类。它负责加载系统类路径java -classpath或-D java.class.path 指定路径下的类库，也就是我们经常用到的classpath路径，开发者可以直接使用系统类加载器，一般情况下该类加载是程序中默认的类加载器，通过ClassLoader#getSystemClassLoader()方法可以获取到该类加载器。</p>
-<p>4.自定义类加载器。自定义类加载器一般继承或间接继承系统类加载器；</p>
-<p>举例说明：</p>
-<p>1.如java.lang.String等jdk自带的类，他们的类加载器是Bootstrap加载器，在HotSpot VM的实现中，BootStrap ClassLoader=null</p>
-<p>2.引入外部jar包的类/非核心的jdk类，他们的类加载器是扩展类（Extension）加载器</p>
-<p>3.我们业务自定义的类，类加载器是应用类/系统类（System）加载器</p>
-<p>注意的一点，jvm提供了方法改变默认的系统类加载器，用户可以通过修改property：java.system.class.loader这个配置改变默认的系统类加载器</p>
-<p>在父亲委托机制中，各个类加载器按照父子关系形成了树形结构，除了根加载器之外，其余的类加载器都有且只有一个父加载器；</p>
-<p>若有一个类加载器能够能够成功加载Test类，那么这个类加载器被称为定义类加载器，所有能成功返回Class对象引用的类加载器（包括定义类加载器）都被称为初始类加载器；</p>
-
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/类加载器/" rel="tag"># 类加载器</a>
-          
-        </div>
-      
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2019/04/24/接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析/" rel="next" title="接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析">
-                <i class="fa fa-chevron-left"></i> 接口初始化规则与类加载器准备阶段和初始化阶段的重要意义分析
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/04/30/ClassLoader源码分析与实例分析/" rel="prev" title="ClassLoader源码分析与实例分析">
-                ClassLoader源码分析与实例分析 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
-      
-    </footer>
-  </div>
-  
-  
-  
+    </header>
   </article>
 
 
 
-    <div class="post-spread">
       
+
     </div>
   </div>
+  
+  
+  
+
+  
+
 
 
           </div>
@@ -435,10 +310,6 @@
 
 
           
-
-  
-
-
 
         </div>
         
@@ -684,10 +555,6 @@
 
 
   
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
-
-
 
   
 

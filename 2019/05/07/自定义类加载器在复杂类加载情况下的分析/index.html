@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="类加载器,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="12345678910111213141516171819202122232425public class MyCat &amp;#123;    public MyCat()&amp;#123;        System.out.println(&amp;quot;MyCat is loaded by:&amp;quot;+this.getClass().getClassLoader());    &amp;#125;    sta">
+<meta name="keywords" content="类加载器">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自定义类加载器在复杂类加载情况下的分析">
+<meta property="og:url" content="http://yoursite.com/2019/05/07/自定义类加载器在复杂类加载情况下的分析/index.html">
+<meta property="og:site_name" content="我的笔记">
+<meta property="og:description" content="12345678910111213141516171819202122232425public class MyCat &amp;#123;    public MyCat()&amp;#123;        System.out.println(&amp;quot;MyCat is loaded by:&amp;quot;+this.getClass().getClassLoader());    &amp;#125;    sta">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-05-07T04:49:14.594Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="自定义类加载器在复杂类加载情况下的分析">
+<meta name="twitter:description" content="12345678910111213141516171819202122232425public class MyCat &amp;#123;    public MyCat()&amp;#123;        System.out.println(&amp;quot;MyCat is loaded by:&amp;quot;+this.getClass().getClassLoader());    &amp;#125;    sta">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'wxmx2008'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/05/07/自定义类加载器在复杂类加载情况下的分析/">
+
+
+
+
+
+  <title>自定义类加载器在复杂类加载情况下的分析 | 我的笔记</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">我的笔记</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/07/自定义类加载器在复杂类加载情况下的分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="wxmx2008">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="我的笔记">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">自定义类加载器在复杂类加载情况下的分析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-07T12:49:34+08:00">
+                2019-05-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/类加载器/" itemprop="url" rel="index">
+                    <span itemprop="name">类加载器</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">public class MyCat &#123;</span><br><span class="line">    public MyCat()&#123;</span><br><span class="line">        System.out.println(&quot;MyCat is loaded by:&quot;+this.getClass().getClassLoader());</span><br><span class="line">    &#125;</span><br><span class="line">    static &#123;</span><br><span class="line">        System.out.println(&quot;MyCat static  code&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class MySample  &#123;</span><br><span class="line">    public MySample()&#123;</span><br><span class="line">        System.out.println(&quot;MySample is loaded by:&quot;+this.getClass().getClassLoader());</span><br><span class="line">       new MyCat();</span><br><span class="line">    &#125;</span><br><span class="line">    static &#123;</span><br><span class="line">        System.out.println(&quot; MySample static  code&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class MyTest2 &#123;</span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        MyTest1 loader1=new MyTest1(&quot;loader1&quot;);</span><br><span class="line">       Class&lt;?&gt; clazz= loader1.loadClass(&quot;com.example.picture.test.MySample&quot;);</span><br><span class="line">       System.out.println(&quot;class:&quot;+clazz.hashCode());</span><br><span class="line">       Object object=clazz.newInstance();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="测试1："><a href="#测试1：" class="headerlink" title="测试1："></a>测试1：</h4><p>MyTest1是上篇文章自定义的类加载器，在主方法中，当调用这个类加载器的loadClass方法时，是由系统<br>类加载器去加载的，当生成MySample类的Class对象后，调用Class对象的newInstance方法时，会调用这个类<br>的无参构造方法，是对MySample类的首次主动使用，会导致MySample类的初始化，因此这里MySample类的静态代码<br>块会被调用，当MySample类初始化完成后就能实例这个类的对象了，这时构造方法执行，new一个MyCat时，是对<br>对MyCat的首次主动使用，会导致MyCat的加载、连接、初始化，初始化阶段静态代码块实行，初始化完成后，实例<br>对象时构造方法执行；所以程序执行结果是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">class:746292446</span><br><span class="line">MySample static code</span><br><span class="line">MySample is loaded by:sun.misc.Launcher$AppClassLoader@18b4aac2</span><br><span class="line">MyCat static code</span><br><span class="line">MyCat is loaded by:sun.misc.Launcher$AppClassLoader@18b4aac2</span><br></pre></td></tr></table></figure></p>
+<h4 id="测试2："><a href="#测试2：" class="headerlink" title="测试2："></a>测试2：</h4><p>当让MySample继承MyCat时，执行结果是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">class:746292446</span><br><span class="line">MyCat static code</span><br><span class="line">MySample static code</span><br><span class="line">MyCat is loaded by:sun.misc.Launcher$AppClassLoader@18b4aac2</span><br><span class="line">MySample is loaded by:sun.misc.Launcher$AppClassLoader@18b4aac2</span><br><span class="line">MyCat is loaded by:sun.misc.Launcher$AppClassLoader@18b4aac2</span><br></pre></td></tr></table></figure></p>
+<h4 id="测试3："><a href="#测试3：" class="headerlink" title="测试3："></a>测试3：</h4><p>删除继承关系，重新编译工程，将com包下的文件放在H:\test文件夹下，删除工程的MyCat.class文件和MySample.class文件，并设置loader1的<br>加载path为H:\test\，运行程序，执行结果是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">findClass invoked:com.example.picture.test.MySample</span><br><span class="line">class loader name:loader1</span><br><span class="line">class:1523554304</span><br><span class="line">MySample static code</span><br><span class="line">MySample is loaded by:MyTest1&#123;classLoaderName=&apos;loader1&apos;&#125;</span><br><span class="line">findClass invoked:com.example.picture.test.MyCat</span><br><span class="line">class loader name:loader1</span><br><span class="line">MyCat static code</span><br><span class="line">MyCat is loaded by:MyTest1&#123;classLoaderName=&apos;loader1&apos;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>删除工程下的MyCat.class，保留MySample.class，运行程序，结果是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">class:746292446</span><br><span class="line">MySample static code</span><br><span class="line">MySample is loaded by:sun.misc.Launcher$AppClassLoader@18b4aac2</span><br></pre></td></tr></table></figure></p>
+<p>后面就报个class找不到的异常；<br>删除工程下的MySample.class，保留MyCat.class，运行程序，结果是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">findClass invoked:com.example.picture.test.MySample</span><br><span class="line">class loader name:loader1</span><br><span class="line">class:1523554304</span><br><span class="line">MySample static code</span><br><span class="line">MySample is loaded by:MyTest1&#123;classLoaderName=&apos;loader1&apos;&#125;</span><br><span class="line">MyCat static code</span><br><span class="line">MyCat is loaded by:sun.misc.Launcher$AppClassLoader@18b4aac2</span><br></pre></td></tr></table></figure></p>
+<h4 id="分析："><a href="#分析：" class="headerlink" title="分析："></a>分析：</h4><p>上面三中情况也是用来分析类加载机制的。第一种情况两个类都是loader1进行加载的：loader1调用loadClass方法加载二进制名字指定的文件时，委托父加载器进行加载，然后层层委托，最后loader1的父类及父类都无法加载，所以是loader1自己加载，加载完成后，这个生成的Class对象持有的类加载引用是loader1，当在MySample的构造方法中首次主动使用MyCat时，MyCat就会初始化，当然未加载就先加载，此时调用类加载器加载MyCat的类加载器是loader1，loader1会层层委托父类加载，由于工程下的MyCat.class文件删除，系统类加载器无法加载，由loader1加载，也就是生成的MySample类的Class对象持有的类加载器引用，所以两个类都由loader1加载；第二种情况是系统类加载器可以加载MySample，也就是用MySample类生成的Class对象持有的类加载器引用是系统类加载器的某个对象，当在MySample 的构造方法中实例一个MyCat对象时，jvm就会使用MySample类生成的Class对象持有的ClassLoader引用去加载MyCat，在这里就是系统类加载器，系统类加载器会层层委托父类进行加载，两个父类都无法加载，则有系统类加载器自己加载，由于在工程目录下已不存在MyCat.class文件，所以控制台就会报告找不到class文件的异常；第三种情况是因为首次加载MySample类的是loader1，所以生成的Class对象持有的类加载器的引用是loader1，当在MySample的构造方法中实例MyCat对象时，loader1就会被调用去加载MyCat，然后层层委托父类去加载，Extension加载器和BootStrap加载器都无法加载，系统类加载器可以，所以最后由系统类加载加载，也就是MySample由loader1加载，MyCat由系统类加载器加载。</p>
+<h4 id="测试四："><a href="#测试四：" class="headerlink" title="测试四："></a>测试四：</h4><ul>
+<li>在MyCat的构造方法中加入一条打印语句：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(&quot;from MyCat:&quot;+MySample.class);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>然后删除工程下的MySample.class文件，运行程序结果是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">findClass invoked:com.example.picture.test.MySample</span><br><span class="line">class loader name:loader1</span><br><span class="line">class:1523554304</span><br><span class="line">MySample static code</span><br><span class="line">MySample is loaded by:MyTest1&#123;classLoaderName=&apos;loader1&apos;&#125;</span><br><span class="line">MyCat static code</span><br><span class="line">MyCat is loaded by:sun.misc.Launcher$AppClassLoader@18b4aac2</span><br></pre></td></tr></table></figure></p>
+<p>然后还会输出一个class找不到的异常。</p>
+<ul>
+<li>将上面这条语句注释，在MySample的构造方法里加入一条打印语句：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(&quot;from MySample :&quot;+MyCat.class);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>重新编译工程，将com包放在H:\test\目录下，删除工程下的MySample.class，运行程序，结果正常输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">findClass invoked:com.example.picture.test.MySample</span><br><span class="line">class loader name:loader1</span><br><span class="line">class:1523554304</span><br><span class="line">MySample static code</span><br><span class="line">MySample is loaded by:MyTest1&#123;classLoaderName=&apos;loader1&apos;&#125;</span><br><span class="line">MyCat static </span><br><span class="line">MyCat is loaded by:sun.misc.Launcher$AppClassLoader@18b4aac2</span><br><span class="line">from MySample :class com.example.picture.test.MyCat</span><br></pre></td></tr></table></figure></p>
+<p>上面两中情况说明：<br>子类加载器的命名空间里的类是可以访问到父类加载器的命名空间里的类；<br>父类加载器的命名空间里的类不能访问子类加载器的命名空间里的类；<br>两种情况下都是loader1加载MySample类，系统类加载加载MyCat类，loader1的父类是系统类加载器，当在父加载器的命名空间中去访问子类加载器的命名空间里的类时，是访问不到的，所以是找不到相应的class文件，第二种情况是可以访问到的</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/类加载器/" rel="tag"># 类加载器</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/30/ClassLoader源码分析与实例分析/" rel="next" title="ClassLoader源码分析与实例分析">
+                <i class="fa fa-chevron-left"></i> ClassLoader源码分析与实例分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/images/avatar.jpg" alt="wxmx2008">
+            
+              <p class="site-author-name" itemprop="name">wxmx2008</p>
+              <p class="site-description motion-element" itemprop="description">烈火燎原、寸草无生</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/ityouknow/spring-boot-examples" title="SpringBoot学习" target="_blank">SpringBoot学习</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/xuyang0902/ido" title="xuyang" target="_blank">xuyang</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/wildfirechat" title="wildfirechat" target="_blank">wildfirechat</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#测试1："><span class="nav-number">1.</span> <span class="nav-text">测试1：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测试2："><span class="nav-number">2.</span> <span class="nav-text">测试2：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测试3："><span class="nav-number">3.</span> <span class="nav-text">测试3：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#分析："><span class="nav-number">4.</span> <span class="nav-text">分析：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测试四："><span class="nav-number">5.</span> <span class="nav-text">测试四：</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wxmx2008</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
